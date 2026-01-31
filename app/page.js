@@ -1,66 +1,168 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import { useState } from "react";
 
 export default function Home() {
+  // PDF → Image
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfDrag, setPdfDrag] = useState(false);
+
+  // Image → PDF
+  const [images, setImages] = useState([]);
+  const [imgLoading, setImgLoading] = useState(false);
+  const [imgDrag, setImgDrag] = useState(false);
+
+  // ---------- PDF → IMAGE ----------
+  const handlePdfSubmit = async (e) => {
+    e.preventDefault();
+    if (!pdfFile) return alert("Select a PDF");
+
+    const formData = new FormData();
+    formData.append("pdf", pdfFile);
+
+    try {
+      setPdfLoading(true);
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pdf-to-image`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Conversion failed");
+
+      const blob = await res.blob();
+      download(blob, "images.zip");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setPdfLoading(false);
+    } setPdfFile(null)
+  };
+
+  // ---------- IMAGE → PDF ----------
+  const handleImgSubmit = async (e) => {
+    e.preventDefault();
+    if (!images.length) return alert("Select images");
+
+    const formData = new FormData();
+
+    Array.from(images).forEach((image) => {
+      formData.append("images", image);
+    });
+
+    try {
+      setImgLoading(true);
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image-to-pdf`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Conversion failed");
+
+      const blob = await res.blob();
+      download(blob, "output.pdf");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setImgLoading(false);
+    } setImages([])
+  };
+
+  const download = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+    <main className="page">
+      
+      <div className="navbar">
+        <h1 className="title">Pdf Lover</h1>
+      </div>
+
+      <div className="container">
+        {/* IMAGE → PDF */}
+        <div className="card green">
+          <h1>Image to PDF</h1>
+
+          <form onSubmit={handleImgSubmit} className="form">
+            <div
+              className={`dropzone ${imgDrag ? "active" : ""}`}
+              onDragOver={(e) => { e.preventDefault(); setImgDrag(true); }}
+              onDragLeave={() => setImgDrag(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setImgDrag(false);
+                setImages(e.dataTransfer.files);
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+              <input
+                type="file"
+                accept="image/png, image/jpeg"
+                multiple
+                hidden
+                id="imgInput"
+                onChange={(e) => setImages(e.target.files)}
+              />
+              <label htmlFor="imgInput">
+                {images.length
+                  ? `${images.length} images selected`
+                  : "Drop images or click"}
+              </label>
+            </div>
+
+            <button className="green-btn" disabled={imgLoading}>
+              {imgLoading ? "Converting..." : "Convert"}
+            </button>
+          </form>
+        </div>
+
+        <p>Convert images to PDF online in seconds. Upload multiple JPG or PNG images and merge them into a single high-quality PDF with original resolution preserved. No registration, no watermarks, and fully mobile-friendly.</p>
+
+        <hr />
+
+        {/* PDF → IMAGE */}
+        <div className="card">
+          <h1>PDF to Image</h1>
+
+          <form onSubmit={handlePdfSubmit} className="form">
+            <div
+              className={`dropzone ${pdfDrag ? "active" : ""}`}
+              onDragOver={(e) => { e.preventDefault(); setPdfDrag(true); }}
+              onDragLeave={() => setPdfDrag(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setPdfDrag(false);
+                setPdfFile(e.dataTransfer.files[0]);
+              }}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <input
+                type="file"
+                accept="application/pdf"
+                hidden
+                id="pdfInput"
+                onChange={(e) => setPdfFile(e.target.files[0])}
+              />
+              <label htmlFor="pdfInput">
+                {pdfFile ? pdfFile.name : "Drop PDF or click"}
+              </label>
+            </div>
+
+            <button disabled={pdfLoading}>
+              {pdfLoading ? "Converting..." : "Convert"}
+            </button>
+          </form>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        <p>Convert PDF pages to images online effortlessly. Upload a PDF and download high-quality JPG images for each page in seconds. Fast processing, secure handling, and no account required.</p>
+
+      </div>
+    </main>
   );
 }
