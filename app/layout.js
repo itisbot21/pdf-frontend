@@ -9,6 +9,10 @@ export const metadata = {
     template: "%s | Pdf Lover",
   },
 
+  icons: {
+  icon: "/favicon.svg",
+},
+
   description:  "Pdf Lover is a fast, free online PDF toolkit. Convert PDF to images and images to PDF online for free. Fast, secure PDF tools with no signup and no watermark.",
 
   keywords: [
