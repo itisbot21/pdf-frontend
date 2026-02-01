@@ -75,94 +75,117 @@ export default function Home() {
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    a.remove();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <main className="page">
-      
-      <div className="navbar">
-        <h1 className="title">Pdf Lover</h1>
-      </div>
+    <>
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            name: "PDF Lover",
+            url: "https://pdf.olivez.in",
+            applicationCategory: "Utility",
+            featureList: [
+              "Image to PDF Converter",
+              "PDF to Image Converter",
+            ],
+            operatingSystem: "All",
+          }),
+        }}
+      />
 
-      <div className="container">
-        {/* IMAGE → PDF */}
-        <div className="card green">
-          <h1>Image to PDF</h1>
+      <main className="page">
 
-          <form onSubmit={handleImgSubmit} className="form">
-            <div
-              className={`dropzone ${imgDrag ? "active" : ""}`}
-              onDragOver={(e) => { e.preventDefault(); setImgDrag(true); }}
-              onDragLeave={() => setImgDrag(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setImgDrag(false);
-                setImages(e.dataTransfer.files);
-              }}
-            >
-              <input
-                type="file"
-                accept="image/png, image/jpeg"
-                multiple
-                hidden
-                id="imgInput"
-                onChange={(e) => setImages(e.target.files)}
-              />
-              <label htmlFor="imgInput">
-                {images.length
-                  ? `${images.length} images selected`
-                  : "Drop images or click"}
-              </label>
-            </div>
-
-            <button className="green-btn" disabled={imgLoading}>
-              {imgLoading ? "Converting..." : "Convert"}
-            </button>
-          </form>
+        <div className="navbar">
+          <h1 className="title">PDF LOVER</h1>
         </div>
 
-        <p>Convert images to PDF online in seconds. Upload multiple JPG or PNG images and merge them into a single high-quality PDF with original resolution preserved. No registration, no watermarks, and fully mobile-friendly.</p>
+        <div className="container">
+          {/* IMAGE → PDF */}
+          <div className="card green">
+            <h2>Convert Image to PDF</h2>
 
-        <hr />
+            <form onSubmit={handleImgSubmit} className="form">
+              <div
+                className={`dropzone ${imgDrag ? "active" : ""}`}
+                onDragOver={(e) => { e.preventDefault(); setImgDrag(true); }}
+                onDragLeave={() => setImgDrag(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setImgDrag(false);
+                  setImages(e.dataTransfer.files);
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  multiple
+                  hidden
+                  id="imgInput"
+                  onChange={(e) => setImages(e.target.files)}
+                />
+                <label htmlFor="imgInput">
+                  {images.length
+                    ? `${images.length} images selected`
+                    : "Drop images or click"}
+                </label>
+              </div>
 
-        {/* PDF → IMAGE */}
-        <div className="card">
-          <h1>PDF to Image</h1>
+              <button className="green-btn" disabled={imgLoading}>
+                {imgLoading ? "Converting..." : "Convert"}
+              </button>
+            </form>
+          </div>
 
-          <form onSubmit={handlePdfSubmit} className="form">
-            <div
-              className={`dropzone ${pdfDrag ? "active" : ""}`}
-              onDragOver={(e) => { e.preventDefault(); setPdfDrag(true); }}
-              onDragLeave={() => setPdfDrag(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setPdfDrag(false);
-                setPdfFile(e.dataTransfer.files[0]);
-              }}
-            >
-              <input
-                type="file"
-                accept="application/pdf"
-                hidden
-                id="pdfInput"
-                onChange={(e) => setPdfFile(e.target.files[0])}
-              />
-              <label htmlFor="pdfInput">
-                {pdfFile ? pdfFile.name : "Drop PDF or click"}
-              </label>
-            </div>
+          <p>Convert images to PDF online in seconds. Upload multiple JPG or PNG images and merge them into a single high-quality PDF with original resolution preserved. No registration, no watermarks, and fully mobile-friendly.</p>
 
-            <button disabled={pdfLoading}>
-              {pdfLoading ? "Converting..." : "Convert"}
-            </button>
-          </form>
+          <hr />
+
+          {/* PDF → IMAGE */}
+          <div className="card">
+            <h2>Convert PDF to Image</h2>
+
+            <form onSubmit={handlePdfSubmit} className="form">
+              <div
+                className={`dropzone ${pdfDrag ? "active" : ""}`}
+                onDragOver={(e) => { e.preventDefault(); setPdfDrag(true); }}
+                onDragLeave={() => setPdfDrag(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setPdfDrag(false);
+                  setPdfFile(e.dataTransfer.files[0]);
+                }}
+              >
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  hidden
+                  id="pdfInput"
+                  onChange={(e) => setPdfFile(e.target.files[0])}
+                />
+                <label htmlFor="pdfInput">
+                  {pdfFile ? pdfFile.name : "Drop PDF or click"}
+                </label>
+              </div>
+
+              <button disabled={pdfLoading}>
+                {pdfLoading ? "Converting..." : "Convert"}
+              </button>
+            </form>
+          </div>
+
+          <p>Convert PDF pages to images online effortlessly. Upload a PDF and download high-quality JPG images for each page in seconds. Fast processing, secure handling, and no account required.</p>
+
         </div>
-
-        <p>Convert PDF pages to images online effortlessly. Upload a PDF and download high-quality JPG images for each page in seconds. Fast processing, secure handling, and no account required.</p>
-
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

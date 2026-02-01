@@ -14,6 +14,8 @@ hr {
 }
 
 p {
+  color: #303030;
+  font-weight: 500;
   width: 90%;
   max-width: 500px;
   text-align: center;
@@ -22,8 +24,8 @@ p {
 .navbar {
   background-color: rgba(0, 0, 0, 0.207);
   width: 100%;
-  margin-bottom: 35px;
-  color: hotpink;
+  margin-bottom: 45px;
+  color: rgb(231, 0, 115);
   text-align: center;
   border-radius: 25px;
   cursor: pointer;
@@ -63,7 +65,7 @@ p {
   background-color: #afc8b4;
 }
 
-.card h1 {
+.card h2 {
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 1.8rem;
