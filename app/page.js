@@ -37,7 +37,8 @@ export default function Home() {
       alert(err.message);
     } finally {
       setPdfLoading(false);
-    } setPdfFile(null)
+      setPdfFile(null)
+    }
   };
 
   // ---------- IMAGE → PDF ----------
@@ -67,7 +68,8 @@ export default function Home() {
       alert(err.message);
     } finally {
       setImgLoading(false);
-    } setImages([])
+      setImages([])
+    }
   };
 
   const download = (blob, filename) => {
